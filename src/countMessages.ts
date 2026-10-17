@@ -1,11 +1,8 @@
 import type {WebClient} from "@slack/web-api";
 
-export const statusMessagePrefix = "Messages since October 4:";
-
 type MessageCount = {
     messageCount: number;
     latestTimestamp: string;
-    statusMessageTimestamp: string | undefined;
 };
 
 export async function countMessagesSince(
@@ -17,7 +14,6 @@ export async function countMessagesSince(
     let cursor: string | undefined;
     let messageCount = 0;
     let latestTimestamp = oldest;
-    let statusMessageTimestamp: string | undefined;
 
     do {
         const page = await client.conversations.history({
@@ -33,14 +29,6 @@ export async function countMessagesSince(
             }
 
             if (message.user === botUserId) {
-                if (
-                    message.ts
-                    && message.text?.startsWith(statusMessagePrefix)
-                    && (!statusMessageTimestamp || Number(message.ts) > Number(statusMessageTimestamp))
-                ) {
-                    statusMessageTimestamp = message.ts;
-                }
-
                 continue;
             }
 
@@ -50,5 +38,5 @@ export async function countMessagesSince(
         cursor = page.response_metadata?.next_cursor || undefined;
     } while (cursor);
 
-    return {messageCount, latestTimestamp, statusMessageTimestamp};
+    return {messageCount, latestTimestamp};
 }

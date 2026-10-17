@@ -118,12 +118,12 @@
 
             try {
                 const response = await fetch("/api/count", {cache: "no-store"});
-                const result = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(result.error || "Could not load the count");
+                    throw new Error("Could not load the count");
                 }
 
+                const result = await response.json();
                 count.textContent = String(result.messageCount);
                 status.textContent = "Updated just now";
             } catch (error) {

@@ -1,5 +1,5 @@
 import {WebClient} from "@slack/web-api";
-import {countMessagesSince, statusMessagePrefix} from "../src/countMessages.js";
+import {countMessagesSince} from "../src/countMessages.js";
 
 const weekStartTimestamp = String(new Date("2026-10-04T00:00:00-04:00").getTime() / 1000);
 
@@ -25,17 +25,6 @@ export async function GET(): Promise<Response> {
         weekStartTimestamp,
         auth.user_id,
     );
-    const text = `${statusMessagePrefix} ${result.messageCount}`;
-
-    if (result.statusMessageTimestamp) {
-        await client.chat.update({
-            channel: channelId,
-            ts: result.statusMessageTimestamp,
-            text,
-        });
-    } else {
-        await client.chat.postMessage({channel: channelId, text});
-    }
 
     return Response.json({messageCount: result.messageCount});
 }
